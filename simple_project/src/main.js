@@ -6,11 +6,12 @@ import router from './router'
 import * as VueFire from "vuefire"
 import {store} from "./store/store"
 Vue.use(VueFire);
+import '@/assets/css/main.css'
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+export default new Vue({
   el: '#app',
   router,
   store,

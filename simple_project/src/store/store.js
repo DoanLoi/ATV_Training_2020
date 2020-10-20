@@ -2,7 +2,11 @@ import Vue from "vue"
 import Vuex from 'vuex'
 import * as Firebase from 'firebase'
 import { uuid } from 'uuidv4';
-import 'firebase/firestore'
+import    toastr from 'toastr'
+import 'firebase/firestore';
+import Auth from '../service/Auth'
+import User from "../service/User"
+import vm from "../main"
 Vue.use(Vuex);
 let config = {
     apiKey: "AIzaSyAcJPwcWUTKE8adRNUbsM_hgkRj6UqEDPo",
@@ -33,7 +37,8 @@ let config = {
     export const store= new Vuex.Store({
     state: {
         works:worksRef,
-        checked:[]
+        checked:[],
+        token:localStorage.getItem('token')
    
     },
     mutations: {
@@ -58,6 +63,9 @@ let config = {
     
         deleteAll(state){
             state.works=[];
+        },
+        setTokenToState(state,token){
+            state.token=token;
         }
      
     }, 
@@ -108,7 +116,46 @@ let config = {
             
               
             })
-        }
+        },
+        onClick(){
+            
+        },
+      
+
+        async signIn({commit},{username,password}){
+            try {
+                console.log(username);
+              let result=await Auth.signIn(username,password);
+              
+              let token=result.data;
+              localStorage.setItem('token',token);
+              commit('setTokenToState',token);
+              vm.$router.push({name: 'Home'});
+         
+                
+            } catch (error) {
+                console.log(error);
+               toastr.error("Đăng nhập thất bại")
+            }
+
+          
+
+      },
+      async getUser(){
+          try {
+              let result= await User.getUser();
+              console.log(result.data);
+          } catch (error) {
+            console.log(error.response);
+          }
+      },
+      logout({commit}){
+          localStorage.removeItem('token');
+          commit('setTokenToState',undefined);
+          vm.$router.push({name:'Login'})
+      }
+
+  
 
     }
 });

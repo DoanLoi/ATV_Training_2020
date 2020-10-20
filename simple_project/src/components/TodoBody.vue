@@ -20,7 +20,7 @@
                     Xóa mục đã chọn
                     <i  class="fa fa-trash" aria-hidden="true"></i>
                 </button>
-                 <button  @click="deleteAll" style="background: linear-gradient(to right, #f85032, #e73827);">
+                 <button  @click="getUser()" style="background: linear-gradient(to right, #f85032, #e73827);">
                     Xóa tất cả
                     <i  class="fa fa-trash" aria-hidden="true"></i>
                 </button>
@@ -49,7 +49,8 @@ export default {
         ...mapActions([
             'addWork',
             'deleteAll',
-            'deleteMany'
+            'deleteMany',
+            'getUser'
         ]),
         addNewWork(newWork){
             if(newWork.name =="" || newWork.time=="") {
@@ -65,6 +66,7 @@ export default {
     computed: {
         ...mapState([
             'works',
+            'token'
         ])
     },
     components:{

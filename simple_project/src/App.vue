@@ -1,50 +1,51 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png" width="100" height="100"> 
-    <div class='todo'>
-      <todo-header />
-      <todo-body />
+  <div class="vue-tempalte">
+    <!-- Navigation -->
+    <nav class="navbar shadow bg-white rounded justify-content-between flex-nowrap flex-row fixed-top navCustom">
+      <div class="container">
+        <ul class="nav navbar-nav flex-row float-right">
+          <li class="nav-item">
+            <router-link class="nav-link pr-3" to="/login">Sign in</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="btn btn-outline-primary" to="/">Home</router-link>
+          </li>
+            <li class="nav-item">
+            <a class="btn btn-outline-primary" @click='logout()' >Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <div class="App">
+      <div class="vertical-center">
+        <div class="inner-block">
+          <router-view />
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
-import TodoHeader from "./components/TodoHeader"
-import TodoBody from "./components/TodoBody"
+  import {mapActions} from 'vuex'
 export default {
-  name: 'App',
-  components:{
-    TodoHeader,
-    TodoBody
+  data(){
+    return{
+
+    }
+    
   },
+  methods: {
+      ...mapActions([
+        'logout'
+      ])
+    }
+
 }
 </script>
-
-<style>
-body{
-  margin: 0px;
-}
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(to right, #34e89e, #0f3443);
-  padding: 0px;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
-}
-.todo{
-  width: 60vw;
-  height: 80vh;
-  background: #ffffff;
-  box-shadow: red;
-  margin: 0 auto;
-  box-shadow: 0 20px 40px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
-
+<style scoped>
+.navCustom{
+  background: white;
 }
 </style>
