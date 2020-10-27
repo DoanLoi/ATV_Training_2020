@@ -166,9 +166,7 @@
           <option value="Nữ">Nữ</option>
 
           <option value="Giới tính khác">Giới tính khác</option>
-        </select>
-        <br />
-        <span style="text-align:flex-start">Đổi mật khẩu</span>
+        </select> 
         <br />
         <button class="update-button" @click="[updateUser({id:user.id,name,phone,email,address,gender}),activeModal=false]">Cập nhật</button>
       </div>

@@ -17,10 +17,7 @@ export const slider={
     },
     actions: {
         changeShowSlider({commit}){
-            commit('changeShowSlider');
+            commit('changeShowSlider')
     }
-       
-       
-
-    }
+  }
 }

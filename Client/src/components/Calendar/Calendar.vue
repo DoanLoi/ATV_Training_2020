@@ -1,7 +1,9 @@
 <template>
   <div class="calendar">
     <div class="calendar__title">Đăng kí thời gian</div>
-    <button class="submit-button">Gửi</button>
+    <button class="submit-button" style="right:320px" @click='onViewTimeDraft()'>Xem nháp</button>
+    <button class="submit-button" style="right:160px" @click='onSaveTimeDraft(user.id,events)'>Lưu nháp</button>
+    <button class="submit-button" style="background:cornflowerblue">Gửi</button>
     <div class="calendar__content">
       <full-calendar
         style="padding: 20px"
@@ -12,11 +14,12 @@
       />
       
     </div>
+    <div>{{events}}</div>
     <vs-dialog overflow-hidden v-model="activeModal">
       <template #header>
         <h4>Chọn thời gian</h4>
       </template>
-
+  
       <div class="edit-form">
         <select class="edit-input" style="width: 83%" v-model="time"  >
           <option value="Sáng">Sáng</option>
@@ -35,35 +38,52 @@
 
 <script>
 import moment from "moment";
+import { mapActions, mapState } from 'vuex';
+import toastr from "toastr";
 export default {
   name: "calendar",
   data() {
     return {
       time: "Sáng",
       day: "",
+      events:[],
       activeModal: false,
-      events: [],
       config: {
-        defaultView: "month",
         locale: "vn",
-        weekend: true,
+        showNonCurrentDates: false,
+        defaultView: 'month',
+        header:{
+          right:'',
+          left:''
+        },
         eventRender: function (event, element) {
           //   console.log(event);
         },
       },
     };
   },
+  computed: {
+    ...mapState({
+        user: (state) => state.user.user,
+        timeWork:(state)=> state.user.timeWork
+    }),
+  },
   methods: {
+    ...mapActions('user',{
+      saveTimeDraft:'saveTimeDraft',
+      getTimeDraft:'getTimeDraft'
+    }),
     eventSelected(event) {
       const day = event.start._d;
       const events = this.events.filter(
-        (event) => day.getTime() !== event.start.getTime()
+        (event) => day.getTime() !== moment(event.start).format()
       );
       this.events = events;
     },
     dayClick(day) {
+      console.log(this.timeWork)
       const events = this.events.filter(
-        (event) => day._d.getTime() !== event.start.getTime()
+        (event) => day._d.getTime() !== moment(event.start).format()
       );
       if (events.length === this.events.length) {
         this.activeModal = true;
@@ -75,14 +95,28 @@ export default {
         this.activeModal = false;
         this.events.push({
           title: this.time,
-          allDay: true,
           start: this.day,
+          allDay: true,
+         
         });
         this.time = "Sáng";
         this.day = "";
       }
     },
+    onViewTimeDraft(){
+      this.events=this.timeWork
+    },
+    async onSaveTimeDraft(id,timeline){
+      if(this.events.length ===0){
+        toastr.error('ERROR','Hãy chọn ngày nên công ty của bạn')
+        return
+      }
+      await this.saveTimeDraft({id,timeline})
+    }
   },
+  created(){
+    this.getTimeDraft()
+  }
 };
 </script>
 <style scoped>
