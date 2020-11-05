@@ -20,7 +20,7 @@
          <ul class="header__nav">
          <li class="search">
            <div class="search__input">
-            <vs-input icon-after style="vertical-align: middle; line-height:60px !important" danger v-model="value3"  placeholder="Search here" >
+            <vs-input icon-after style="vertical-align: middle; line-height:60px !important" danger   placeholder="Search here" >
             <template #icon>
           <i class='bx bx-search '></i>
         </template>
@@ -30,8 +30,11 @@
          <i class='bx bx-search search__icon'></i>
       </li>
       <li class="user">
-        <img src="../assets/avater.jpg" />
-        <span>Doan Loi</span>
+           <img
+               v-if='user.avatar'
+               :src="bufferToBase64(user.avatar)"
+              />
+        <span>{{user.name}}</span>
       </li>
       <li class="logout" @click="logout()">
           <span>Logout</span>
@@ -57,7 +60,7 @@ export default {
   computed: {
      ...mapState({
       activeSlider:state=>state.slider.activeSlider,
-      token:state=>state.auth.token
+      user:state=>state.user.user,
     }),
   
   },
@@ -72,7 +75,10 @@ export default {
      else this.width=280
      this.$store.dispatch('slider/changeShowSlider', null, {root:true});
     
-   }
+   },
+    bufferToBase64(cv){
+      return  'data:application/pdf;base64,'+Buffer.from(cv).toString("base64");
+    }
   },
   mounted(){
   }

@@ -8,7 +8,10 @@ export const leader={
         resultSearchUser:[],
         isLoading:true,
         teamID:'',
-        listSalary:[]
+        listSalary:[],
+        timeWorks:[],
+        historySalary:[],
+        inforIntern:''
     }),
     mutations: {
         setListIntern(state,interns){
@@ -28,6 +31,15 @@ export const leader={
         },
         setListSalarynWhenAdd(state,intern){
             state.listSalary=[...state.listSalary,intern]
+        },
+        setTimeWorks(state,timeWorks){
+            state.timeWorks=timeWorks
+        },
+        setHistorySalary(state,historySalary){
+            state.historySalary=historySalary
+        },
+        setInforIntern(state,intern){
+            state.inforIntern=intern
         }
         
     },
@@ -44,6 +56,16 @@ export const leader={
                 
             }
            
+        },
+        //Lấy thông tin của intern
+        async getInternByID({commit},id){
+            try {
+                let result=await api.post('/getIntern',{id})
+                commit('setInforIntern',result.data.user)
+
+            } catch (error) {
+                
+            }
         },
         //Xóa intern khỏi nhóm
         async delInternFromTeam({dispatch,commit},id){
@@ -100,7 +122,7 @@ export const leader={
                 console.log(error.response.data.message);
             }
         },
-                //Thêm trợ cấp cho intern
+        //Thêm trợ cấp cho intern
         async addSalaryForIntern({commit},{internid,salary,teamid}){
             try {
                 let result=await api.post('/addSalaryForIntern',{internid,salary,teamid});
@@ -111,7 +133,18 @@ export const leader={
                 console.log(error.response.data.message);
             }
         },
-    //Xóa trợ cấp
+        async editSalaryOfIntern({commit,dispatch},{id,salary}){
+            try {
+                
+                let result=await api.post('/editSalaryOfIntern',{id,salary});
+                dispatch('getSalariesOfTeam')
+                toastr.success("Sửa trợ cấp thành công",'Success');
+                return true;
+            } catch (error) {
+                toastr.error(error.response.data.message,'ERROR');
+            }
+        },
+        //Xóa trợ cấp
         async delSalaryOfTeam({dispatch,commit},id){
             try {
                 await api.post("/delSalaryOfTeam",{id});
@@ -121,6 +154,7 @@ export const leader={
                 toastr.error('Xóa thất bại','ERROR');
             }
         },
+        //Lưu bản nháp lịch lên cty
         async saveTimeDraft({commit}){
             try {
                 let result=await api.post('/saveTimeDraft')
@@ -129,7 +163,29 @@ export const leader={
                 let {message}=error.response.data;  
                 toastr.error(message,'Error');
             }
-        }
+        },
+         //Lấy lịch làm việc của nhóm
+         async getTimeWorks({commit,state}){
+            try {
+                let result=await api.post('/getTimeWorkOfTeam');
+                let timeWorks=result.data;
+                commit('setTimeWorks',timeWorks);
+            } catch (error) {
+                
+            }
+           
+        },
+            //Lấy lịch sử trợ cấp
+        async getHistorySalary({commit,state},id){
+            try {
+                let result=await api.post('/getHistorySalary',id);
+                let historySalary=result.data
+                return historySalary
+            } catch (error) {
+                console.log(error.response.data.message);
+            }
+           
+        },
 
 
     }

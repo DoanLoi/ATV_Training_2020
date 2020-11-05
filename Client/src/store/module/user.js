@@ -1,12 +1,14 @@
 import api from "../../service/api"
 import toastr from 'toastr'
-import vm from "../../main"
+import axios from "axios";
+
 export const user={
     namespaced: true,
     state:()=>({
         user:{},
         education:{},
-        timeWork:[]
+        timeWork:[],
+        timeDraft:[]
     }),
     mutations:{
         setUser(state,user){
@@ -25,7 +27,11 @@ export const user={
         },
         setTimeWork(state,timeWork){
             state.timeWork=timeWork
+        },
+        setTimeDraft(state,timeWork){
+            state.timeDraft=timeWork
         }
+
     },
     actions: {
        async getUser({commit}){
@@ -35,24 +41,55 @@ export const user={
             commit('setUser',user.data.user);
             commit('setEducation',user.data.education);
            } catch (error) {
-               console.log(error.response.data  )
+               console.log(error.response.data)
            }
      
          
         },
-        async updateUser({commit},newUser){
+        async updateUser({dispatch,commit},newUser){
             try {
-                
                 let user=await api.put('/updateUser',{newUser});
-                console.log(user);
-                commit('setUser',user.data.user);
+                // commit('setUser',user.data.user);
+               
+                dispatch("getUser")
                 toastr.success("Cập nhật thông tin thành công",'Success');
-            } catch (error) {
+             } catch (error) {
                 toastr.error("Cập nhật thất bại",'Error');
             }
             
            
              
+        },
+        //Update Avatar
+        async updateAvatar({dispatch,commit},{avatar}){
+            try {
+                var formData =new FormData();
+                console.log(avatar)
+                formData.append('avatar',avatar)
+                let res=await api.post('/uploadAvatar',formData);
+                dispatch('getUser')
+                toastr.success("Thay ảnh đại diện thành công",'Success');
+               
+            } catch (error) {
+                console.log(error);
+                toastr.error("Thêm thất bại",'Error');
+            }
+        },
+        //Upload CV 
+        async uploadCV({dispatch,commit},CV){
+            try {
+                var formData =new FormData();
+                formData.append('file',CV)
+                let res=await api.post('/uploadCV',formData);
+
+                   
+                
+                // commit('setUser',user.data.user);
+               
+            } catch (error) {
+                console.log(error);
+                toastr.error("Thêm thất bại",'Error');
+            }
         },
         async addEducation({commit},newEducation){
             try {
@@ -90,7 +127,7 @@ export const user={
             try {
                 let result=await api.post('/saveTimeDraft',{id,timeline})
                 let timeWork=result.data
-                commit('setTimeWork',timeWork)
+                commit('setTimeDraft',timeWork)
                 toastr.success("Lưu lịch thành công",'Success');
             } catch (error) {
                 let {message}=error.response.data;  
@@ -102,7 +139,30 @@ export const user={
             try {
                 let result=await api.post('/getTimeDraft')
                 let timeWork=result.data
-                console.log(timeWork)
+                commit('setTimeDraft',timeWork)
+               
+            } catch (error) {
+                let {message}=error.response.data;  
+                toastr.error(message,'Error');
+            }
+        },
+        //Đăng kí lịch chính thức
+        async saveTimeWork({commit},{id,timeline}){
+            try {
+                let result=await api.post('/saveTimeWork',{id,timeline})
+                let timeWork=result.data
+                commit('setTimeWork',timeWork)
+                toastr.success("Đăng kí lịch thành công",'Success');
+            } catch (error) {
+                let {message}=error.response.data;  
+                toastr.error(message,'Error');
+            }
+        },
+        //Lấy bản nháp lịch làm việc
+        async getTimeWork({commit}){
+            try {
+                let result=await api.post('/getTimeWork')
+                let timeWork=result.data
                 commit('setTimeWork',timeWork)
                
             } catch (error) {

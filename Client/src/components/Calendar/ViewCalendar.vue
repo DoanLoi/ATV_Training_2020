@@ -26,26 +26,37 @@
         <thead>
           <tr>
             <th style="width:150px">Intern</th>
-            <th style="width:32px" v-for="index in 30" :key="index" >{{index}}</th>
+            <th style="width:32px" v-for="index in (6,dayOfMonth)" :key="index" >{{index}}</th>
           </tr>
         </thead>
         <tbody style="padding-top:20px">
-          <tr>
-            <th  style="width:150px">Đoàn Văn Lợi</th>
-             <th style="width:32px" v-for="index in 30" :key="index" >
+          <tr v-for="(timeOfIntern,index) in timeWorks" :key="timeOfIntern">
+            <th  style="width:150px">{{index}}</th>
+             <th style="width:32px" v-for="index in dayOfMonth" :key="index" >
+               <div v-if="timeOfIntern[index]=='Sáng'">
                   <i
                     style="font-size: 25px;color:#28fa40"
-                    class="bx bx-check"
-                  ></i>
-                    <i v-if="!(index % 13)"
-                    style="font-size: 25px;color:red"
-                    class="bx bx-x"
-                  ></i>
+                    class="bx bx-check"></i>
+                    <i style="font-size: 25px;color:red" class="bx bx-x"></i>
+               </div>
+                 <div v-else-if="timeOfIntern[index]=='Chiều'">
+                  <i style="font-size: 25px;color:red" class="bx bx-x"></i>
+                  <i
+                    style="font-size: 25px;color:#28fa40"
+                    class="bx bx-check"></i>
+               </div>
+                 <div v-else-if="timeOfIntern[index]=='Cả ngày'">
+                  <i style="font-size: 25px;color:#28fa40" class="bx bx-check"></i>
+               </div>
+                 <div v-else-if="timeOfIntern[index]==null">
+                  <i style="font-size: 25px;color:red" class="bx bx-x"></i>
                   
-             </th>
+               </div>
+               
+            </th>
 
-          </tr>
-                 <tr>
+           </tr>
+             <!--    <tr>
             <th  style="width:150px" v-if="user.role =='Admin'">Nguyễn Văn Toàn</th>
              <th style="width:30px" v-for="index in 30" :key="index" >
                   <i
@@ -75,7 +86,7 @@
                   
              </th>
 
-          </tr>
+          </tr> -->
           
         </tbody>
       </table>
@@ -86,21 +97,27 @@
 
 <script>
 import moment from "moment";
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 export default {
   name: "view-calendar",
   data() {
     return {
-  
+      dayOfMonth: moment(). daysInMonth()
     };
   },
   computed: {
     ...mapState({
-       user:state=>state.user.user
+       user:state=>state.user.user,
+       timeWorks:state=>state.leader.timeWorks
     })
   },
-  mounted(){
-   
+  methods: {
+    ...mapActions('leader',{
+      getTimeWorks:'getTimeWorks'
+    })
+  },
+  created(){
+   this.getTimeWorks()
   }
 
    

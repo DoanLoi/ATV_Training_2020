@@ -8,8 +8,10 @@ import Calendar from "../components/Calendar/Calendar"
 import ViewCalendar from "../components/Calendar/ViewCalendar"
 import ListUser from "../components/Intern/ListUser"
 import ListUserOfTeam from "../components/ManageTeam/ManageTeam"
-import ManageSalary from "../components/ManageTeam/ManageSalary"
+import ManageSalaryOfTeam from "../components/ManageTeam/ManageSalary"
+import ManageSalary from "../components/Intern/MangeSalary"
 import HistorySalary from "../components/ManageTeam/HistorySalary"
+import ViewInfor from "../components/Profile/ViewInfor"
 import {store} from "../store"
 
 Vue.use(Router);
@@ -25,8 +27,10 @@ const router= new Router({
         {path:'/viewcalendar',name:'ViewCalendar',component:ViewCalendar},
         {path:'/listuser',name:'ListUser',component:ListUser},
         {path:'/listuserofteam',name:'ListUserOfTeam',component:ListUserOfTeam},
-        {path:'/salary',name:'ManageSalary',component:ManageSalary},
-        {path:'/historysalary',name:'HistorySalary',component:HistorySalary}
+        {path:'/salary',name:'ManageSalary',component:ManageSalaryOfTeam},
+        {path:'/listsalary',name:'ManageSalary',component:ManageSalary},
+        {path:'/historysalary/:id/:name',name:'HistorySalary',component:HistorySalary},
+        {path:'/viewinfor/:id',name:'ViewInfor',component:ViewInfor}
       ],
     },{
       path:'/login',

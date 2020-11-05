@@ -1,115 +1,82 @@
 <template>
   <div class="calendar">
-    <div class="calendar__title">Quản lý Team</div>
-    <button class="submit-button" @click="activeModal = !activeModal">
-      Thêm Intern
-    </button>
-    <div class="profile__infor">
-      <div class="profile__infor__wraper">
-        <vs-row vs-w="12">
-          <vs-col style="display: flex" w="12">
-            <span class="profile__avatar">
-              <img
-                src="https://photo-1-baomoi.zadn.vn/w1000_r1/2019_08_30_106_32013005/427117464106a858f117.jpg"
-              />
-            </span>
-            <vs-row>
-              <vs-col lg="5" sm="12" class="profile__basic">
-                <ul class="profile__infor__company">
-                  <li>
-                    <h2 style="text-align: start">Leader: {{ user.name }}</h2>
-                  </li>
-                  <li>
-                    <h5>Lĩnh vực: {{ user.type }}</h5>
-                  </li>
-                  <li>
-                    <h5>Employee ID : {{ user.id }}</h5>
-                  </li>
-                  <li><h5>Date of Join : {{convertTime(user.start)}}</h5></li>
-                </ul>
-              </vs-col>
-              <vs-col
-                vs-type="flex"
-                vs-justify="center"
-                vs-align="center"
-                lg="7"
-                sm="12"
-              >
-                <ul class="profile__detail">
-                  <li>
-                    <div class="title">Số điện thoại:</div>
-                    <div class="text">{{ user.phone}}</div>
-                  </li>
-                  <li>
-                    <div class="title">Email:</div>
-                    <div class="text">{{ user.email }}</div>
-                  </li>
-                  <li>
-                    <div class="title">Địa chỉ:</div>
-                    <div class="text">{{ user.address }}</div>
-                  </li>
-                  <li>
-                    <div class="title">Giới tính:</div>
-                    <div class="text">{{ user.gender }}</div>
-                  </li>
-                </ul>
-              </vs-col>
-            </vs-row>
-          </vs-col>
-        </vs-row>
-      </div>
-    </div>
-    <div class="calendar__title" style="font-size: 20px">
-      Danh sách Intern Of Team
+    <div class="calendar__title">Quản lý trợ cấp Intern</div>
+    <button class="submit-button" @click="activeModal=!activeModal">Thêm trợ cấp</button>
+     <div
+      style="
+        text-align: start;
+        font-size: 20px;
+        color: #878a87;
+        margin-bottom: 40px;
+      "
+    >
+      Danh sách trợ cấp
     </div>
     <div class="calendar__content">
       <vs-row>
-        <vs-col lg="3" sm="6" xs="12">
-          <input class="edit-input" placeholder="Họ tên" />
+        <vs-col lg='3' sm='6' xs='12'>
+            <input class="edit-input" placeholder="Họ tên">
         </vs-col>
-        <vs-col lg="3" sm="6" xs="12">
-          <select class="edit-input" style="height: 47px">
-            <option value="1">Admin</option>
-            <option value="2">Leader</option>
-            <option value="3">Intern</option>
-          </select>
+           <vs-col lg='3' sm='6' xs='12'>
+            <select class="edit-input"  style="height:47px">
+              <option value="1">Admin</option>
+              <option value="2">Leader</option>
+              <option value="3">Intern</option>
+            </select>
         </vs-col>
-        <vs-col lg="3" sm="6" xs="12">
-          <select class="edit-input" style="height: 47px">
-            <option value="1">Nam</option>
-            <option value="2">Nữ</option>
-          </select>
+               <vs-col lg='3' sm='6' xs='12'>
+             <select class="edit-input"  style="height:47px">
+              <option value="1">Nam</option>
+               <option value="2">Nữ</option>
+            </select>
         </vs-col>
-        <vs-col lg="3" sm="6" xs="12">
-          <button class="search-button">Tìm kiếm</button>
+                  <vs-col lg='3' sm='6' xs='12'>
+           <button  class="search-button">Tìm kiếm</button>
         </vs-col>
+        
       </vs-row>
-      <table style="margin-top: 20px; margin-left: 20px" class="table-calendar">
+      <table style="margin-top:20px;margin-left:20px;" class='table-calendar'>
         <thead>
           <tr>
-            <th style="width: 150px">ID</th>
-            <th style="width: 200px">Họ và tên</th>
-            <th style="width: 300px">Ngày vào team</th>
-            <th style="width: 300px">Tên tài khoản</th>
-            <th style="width: 150px">Lĩnh vực</th>
-            <th style="width: 150px">Actions</th>
+            <th style="width:100px">ID</th>
+            <th style="width:200px">Họ và tên</th>
+            <th style="width:200px">Leader</th>
+            <th style="width:300px">Ngày cập nhật trợ cấp</th>
+            <th style="width:250px">Trợ cấp / buổi (VNĐ)</th>
+            <th style="width:150px">Actions</th>
+            <th style="width:150px">Lịch sử trợ cấp</th>
+           
           </tr>
         </thead>
-        <tbody style="padding-top: 20px">
-          <tr v-for="intern in listIntern" :key="intern.internid">
-            <th>{{intern.internid}}</th>
-            <th><router-link :to='"/viewinfor/"+intern.internid' style="text-decoration:none">{{intern.name}}</router-link></th>
-            <th>{{convertTime(intern.start)}}</th>
-            <th>{{intern.username}}</th>
-            <th>{{intern.type}}</th>
-            <th>
-              <i @click="delInternFromTeam(intern.internid)"  style="font-size: 25px; color: red" class="bx bx-x-circle"></i>
-            </th>
-          </tr>
+        <tbody style="padding-top:20px">
+            <tr v-for="salary in listSalary" :key='salary.internid'>
+                <th>{{salary.internid}}</th>
+                <th>{{salary.name}}</th>
+                 <th>{{salary.leader}}</th>
+                <th>{{convertTime(salary.start)}}</th>
+                <th>{{salary.salaryaday}}</th>
+                <th>
+                           <!-- <i
+                    style="font-size: 25px;color:#559aed"
+                    class="bx bx-edit"
+                  ></i> -->
+                     <i
+                     @click="delSalaryOfTeam(salary.internid)"
+                    style="font-size: 25px;color:red"
+                    class="bx bx-x-circle"
+                  ></i>
+               
+                </th>
+                <th>
+                  <div style="color:#2d8ee3;text-decoration:none; cursor: pointer;" @click="toHistorySalary(salary.name,salary.internid)">Xem</div>
+                </th>
+
+            </tr>
+         
         </tbody>
       </table>
     </div>
-    <vs-dialog overflow-hidden v-model="activeModal" >
+         <vs-dialog overflow-hidden v-model="activeModal" >
       <template #header>
         <h4>Thêm Intern</h4>
       </template>
@@ -134,20 +101,21 @@
           </ul>
           <div v-else style="height:50px;margin-top:20px">Không tìm thấy</div>
         </div>
-        <!-- <input type="text" placeholder="Lĩnh vực" class="edit-input" /> -->
+        <input type="text" placeholder="Trợ cấp / buổi (VNĐ)" class="edit-input" v-model="salary" />
 
         <br />
 
-        <button class="update-button" @click="onAddIntern()">Thêm</button>
+        <button class="update-button" @click="onAddSalary()">Thêm</button>
       </div>
     </vs-dialog>
+   
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import { mapActions, mapState } from 'vuex';
 import toastr from "toastr";
-import { mapActions, mapState } from "vuex";
 export default {
   name: "view-calendar",
   data() {
@@ -157,32 +125,33 @@ export default {
       showResult: "none",
       keyword: "",
       isLoading:true,
-      internToAdd:''
-    };
+      salary:'',
+      internToAdd:'',
+    }
   },
-  computed: {
+  computed :{
     ...mapState({
-      listIntern: (state) => state.leader.listIntern,
+      listSalary:state=>state.admin.listSalary,
       user: (state) => state.user.user,
-      resultSearchUser:state =>state.leader.resultSearchUser,
-      teamid:state=>state.leader.teamID
-    }),
+      resultSearchUser:state =>state.admin.resultSearchUser
+    })
   },
   methods: {
-    ...mapActions("leader", {
-      getInternsOfTeam: "getInternsOfTeam",
-      searchUser:'searchUser',
-      addInternToTeam:'addInternToTeam',
-      delInternFromTeam:'delInternFromTeam'
+    ...mapActions('admin',{
+      getSalaries:'getSalaries',
+      searchInternToAddSalary:'searchInternToAddSalary',
+      addSalaryForIntern:'addSalaryForIntern',
+      delSalaryOfTeam:'delSalaryOfTeam'
     }),
-   async onSearch(){
-      this.showResult = 'block';
+    
+      async onSearch(){
+      this.showResult = 'block'
       this.internToAdd='';
       if(this.keyword=="") {
            this.showResult = 'none';
            return;
       }
-      await this.searchUser({keyword:this.keyword});
+      await this.searchInternToAddSalary({keyword:this.keyword});
       this.isLoading=false;
 
     },
@@ -193,27 +162,42 @@ export default {
     convertTime(time) {
       return moment(time).format("DD/MM/YYYY");
     },
-    async onAddIntern(){
+    async onAddSalary(){
        if(this.internToAdd ==''){
-          toastr.error("Hãy chọn người bạn muốn thêm vào nhóm", "ERROR");
+          toastr.error("Hãy chọn người bạn muốn thêm vào  trợ cấp", "ERROR");
           return;
        }
-        let res = await this.addInternToTeam({newIntern:this.internToAdd,teamid:this.teamid});
+        else if(this.salary ==''){
+          toastr.error("Hãy thêm trợ cấp / buổi", "ERROR");
+          return;
+        }
+        let res = await this.addSalaryForIntern({internid:this.internToAdd.internid,salary:this.salary,teamid:this.internToAdd.teamid});
         if (res == true) {
           toastr.success("Thêm thành công", "DONE")
           this.activeModal = false
-          this.keyword=''
+          this.keyword='',
+          this.salary='',
+          this.internToAdd=''
         }
+        else{
+           toastr.error("Thêm thất bại", "ERROR")
+        }
+    },
+    toHistorySalary(name,id){
+      this.$router.push({ name:'HistorySalary', params: { name,id }})
     }
   },
-  created() {
-    this.getInternsOfTeam();
-  },
+  created(){
+    this.getSalaries()
+  }
+
+   
 };
 </script>
 <style scoped>
 .calendar {
-  position: relative;
+    position: relative;
+   
 }
 .calendar__title {
   text-align: start;
@@ -227,7 +211,7 @@ export default {
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
   background: #fff;
   border-radius: 10px;
-  margin-bottom: 40px;
+  margin-bottom:40px;
 }
 .profile__infor__wraper {
   padding: 20px;
@@ -269,6 +253,7 @@ export default {
     padding-right: 0px;
   }
 }
+
 .calendar__content {
   border: 1px solid #ededed;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
@@ -276,12 +261,12 @@ export default {
   background: #fff;
 }
 .submit-button {
-  position: absolute;
-  z-index: 1;
-  top: 0px;
-  right: 10px;
+    position:absolute;
+    z-index: 1;
+    top: 0px;
+ right: 10px;
   background: #ff9b44;
-  color: white;
+  color: white;;
   border: none;
   width: 120px;
   height: 40px;
@@ -289,18 +274,19 @@ export default {
   border-radius: 10px;
   margin-bottom: 20px;
 }
-.submit-button:hover {
-  transform: scale(1.2);
-  transition-duration: 0.9s;
+.submit-button:hover{
+    transform: scale(1.2);
+    transition-duration: .9s;
+
 }
-.search-button {
-  margin-top: 20px;
-  background: rgb(85, 206, 99);
-  width: 70%;
-  height: 47px;
+.search-button{
+  margin-top:20px;
+  background:rgb(85, 206, 99);
+  width:70%;
+  height:47px;
   border: none;
   border-radius: 5px;
-  color: white;
+  color: white;;
 }
 .edit-input {
   width: 70%;
@@ -311,33 +297,37 @@ export default {
   border: 1px solid #ddd;
   border-radius: 5px;
   position: relative;
+
 }
-.table-calendar {
-  border-spacing: 0px;
+.table-calendar{
+  border-spacing: 0px ;
 }
-.table-calendar thead tr {
-  box-shadow: 0 0 3px #e5e5e5;
-  height: 45px;
+.table-calendar thead tr{
+  
+    box-shadow: 0 0 3px #e5e5e5;
+    height: 45px;
 }
-.table-calendar tbody tr {
-  box-shadow: 0 0 3px #e5e5e5;
-  height: 60px;
-  color: #8b8b8c;
-  font-weight: 500;
+.table-calendar tbody tr{
+  
+    box-shadow: 0 0 3px #e5e5e5;
+    height: 60px;
+    color: #8b8b8c;
+    font-weight: 500;
 }
-.table-calendar tbody tr th {
-  border: none;
+.table-calendar tbody tr th{
+  
+   border: none;
 }
-.table-calendar tbody tr:nth-child(2n) {
-  background-color: #ebedeb;
+.table-calendar tbody tr:nth-child(2n){
+  background-color:#ebedeb;
 }
 .submit-button {
-  position: absolute;
-  z-index: 1;
-  top: 0px;
+    position:absolute;
+    z-index: 1;
+    top: 0px;
   right: 10px;
   background: #ff9b44;
-  color: white;
+  color: white;;
   border: none;
   width: 120px;
   height: 40px;
@@ -345,9 +335,10 @@ export default {
   border-radius: 10px;
   margin-bottom: 20px;
 }
-.submit-button:hover {
-  transform: scale(1.2);
-  transition-duration: 0.9s;
+.submit-button:hover{
+    transform: scale(1.2);
+    transition-duration: .9s;
+
 }
 .update-button {
   background: #0ca836;
@@ -359,31 +350,29 @@ export default {
   border-radius: 10px;
   margin-bottom: 20px;
 }
-.result-search {
-  background: #ebedeb;
-  border-radius: 10px;
-  position: absolute;
-  width: 300px;
-  top: 80px;
-  left: 50px;
-  z-index: 2;
+.result-search{
+    background: #ebedeb;
+    border-radius: 10px;
+    position:absolute;
+    width: 300px;
+    top:80px;
+    left:50px;
+    z-index: 2;
+
 }
-.result-search img {
-  width: 30px;
-  height: 30px;
-  border-radius: 100px;
+.result-search img{
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+    margin-right: 10px;
 }
-.result-search ul {
-  list-style: none;
+.result-search ul{
+    list-style: none;
 }
-.result-search li {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-}
-.result-search li:hover{
-  background:#cff5cb;
-  cursor: pointer;
+.result-search li{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start ;
+    margin-bottom: 10px;
 }
 </style>

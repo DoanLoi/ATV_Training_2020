@@ -20,7 +20,8 @@
           <vs-col style="display: flex" w="12">
             <span class="profile__avatar">
               <img
-                src="https://i.pinimg.com/280x280_RS/7b/f4/9c/7bf49cc8e519bcea2fdd87b00df971aa.jpg"
+               v-if='user.avatar'
+               :src="bufferToBase64(user.avatar)"
               />
             </span>
             <vs-row>
@@ -56,6 +57,11 @@
                   <li>
                     <div class="title">Giới tính:</div>
                     <div class="text">{{user.gender}}</div>
+                  </li>
+                    <li>
+                    <div class="title">CV:</div>
+                    <div v-if="user.cv" class="text" style="cursor:pointer;color:blue;font-weight:bold" @click="activeViewCV=true" >Xem CV</div>
+                     <div v-else style="color:blue;font-weight:bold">Chưa upload CV</div>
                   </li>
                 </ul>
               </vs-col>
@@ -145,15 +151,22 @@
       </template>
 
       <div class="edit-form">
-        <span class="profile__avatar">
+        <span class="profile__avatar" style="position:relative">
           <img
-            src="https://i.pinimg.com/280x280_RS/7b/f4/9c/7bf49cc8e519bcea2fdd87b00df971aa.jpg"
+            v-if='user.avatar'
+            :src="avatar?avatar:bufferToBase64(user.avatar.data)"
             style="margin-bottom: 10px"
           />
+              <label class='icon_avatar' for="upload-photo">
+               <i
+                style="margin-top: 5px; font-size: 30px;color:#898c8a"
+                class="bx bx-camera"
+              ></i>
+          </label>
+          <input type="file" name="photo" id="upload-photo" @change="previewAvatar"/>
         </span>
-        <div style="margin-bottom: 20px; margin-top: 20px">
-          <label class="update-avatar" for="upload-photo">Update ảnh</label>
-          <input type="file" name="photo" id="upload-photo" />
+        <div style=" margin-top: 20px;position:relative">
+            <button class="update-button" @click='[updateAvatar({avatar:file}),activeModal=false]'>Sửa ảnh</button>
         </div>
 
         <input type="text" placeholder="Họ và tên" class="edit-input" v-model="name" />
@@ -214,33 +227,40 @@
       </template>
 
       <div class="edit-form">
-        <input type="file" style="margin-top:30px;margin-bottom:30px"/>
+        <input type="file" style="margin-top:30px;margin-bottom:30px" @change="previewCV"/>
     
 
         <br />
 
-        <button class="update-button">Thêm</button>
+        <button class="update-button" @click="[uploadCV(cv),activeModalCV=false]">Thêm</button>
       </div>
     </vs-dialog>
+       <vs-dialog overflow-hidden v-model="activeViewCV">
+      <template #header>
+        <h4>View CV</h4>
+      </template>
+
+      <div class="edit-form">
+        <iframe v-if="user.cv" class="view_CV" :src="bufferToBase64(this.user.cv)"></iframe>
+      </div>
+    </vs-dialog>
+ 
   
   </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
 import toastr from 'toastr'
-import ViewCV from "./ViewCV"
 export default {
   name: "infor-profile",
-  components: {
-    'view-cv':ViewCV
-  },
   data() {
     return {
       activeModal: false,
       activeModalEducation: false,
       activeModalCV:false,
-      activeViewCV:true,
+      activeViewCV:false,
       activeModalPassword: false,
+      avatar:'',
       name:'',
       phone:'',
       email:'',
@@ -252,7 +272,9 @@ export default {
       finish:'',
       curPassword:'',
       newPassword:'',
-      confirmPassword:''
+      confirmPassword:'',
+      cv:'',
+      file:''
 
     };
   },
@@ -261,8 +283,19 @@ export default {
       updateUser:'updateUser',
       addEducation:'addEducation',
       delEducation:'delEducation',
-      updatePassword:'updatePassword'
+      updatePassword:'updatePassword',
+      uploadCV:'uploadCV',
+      updateAvatar:'updateAvatar'
     }),
+    previewAvatar(event) {
+      this.file=event.target.files[0]
+      this.avatar= URL.createObjectURL(this.file)
+    },
+    previewCV(event) {
+      
+      this.cv =event.target.files[0]
+      // this.cv = URL.createObjectURL(file)
+    },
     openModalEdit(){
       this.name=this.user.name;
       this.phone=this.user.phone;
@@ -288,7 +321,10 @@ export default {
             this.confirmPassword='';
         }
       }
-    }
+    },
+    bufferToBase64(cv){
+      return  'data:application/pdf;base64,'+Buffer.from(cv).toString("base64");
+}
   },
   computed: {
     ...mapState({
@@ -492,6 +528,25 @@ export default {
   font-size: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
+}
+.view_CV{
+
+width: 600px;
+height: 400px;
+
+}
+h4{
+  margin:0px;
+}
+.icon_avatar{
+  position:absolute;
+  top: -40px;
+  left: 120px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 100px;
+  background: #ddd;
 }
 @media screen and (max-width: 910px) {
   .profile__basic {

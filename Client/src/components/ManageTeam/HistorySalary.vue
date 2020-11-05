@@ -9,7 +9,7 @@
         margin-bottom: 40px;
       "
     >
-      Intern / Đoàn Văn Lợi
+      Intern / {{name}}
     </div>
     <div style="position:absolute;top:70px;right:70px">
          <select class="edit-input" style="height: 47px" v-model="year">
@@ -21,36 +21,25 @@
             </select>
     </div>
     <div class="chart">
-      <line-chart></line-chart>
+      <line-chart v-if="historySalary.length" :data="historySalary"></line-chart>
     </div>
-
     <div class="calendar__content" style="margin-top: 30px">
       <div class="title" style="font-size: 20px; margin: 25px">Chi tiết
       </div>
       <table style="margin-top: 20px; margin-left: 20px" class="table-calendar">
         <thead style="background: #f87979; color: white">
           <tr>
-            <th style="width: 250px">Time</th>
-            <th style="width: 300px">Số buổi</th>
-            <th style="width: 400px">Trợ cấp / buổi</th>
-            <th style="width: 400px">Tổng trợ cấp   </th>
+            <th style="width: 350px">Time</th>
+            <th style="width: 400px">Ngày cập nhật</th>
+            <th style="width: 400px">Trợ cấp / buổi (VNĐ)</th>
            
           </tr>
         </thead>
         <tbody style="padding-top: 20px">
-          <tr>
-            <th>11/2020</th>
-            <th>20</th>
-            <th>10 000 VND</th>
-            <th>200 000 VND</th>
-       
-          </tr>
-         <tr>
-            <th>12/2020</th>
-            <th>20</th>
-            <th>10 000 VND</th>
-            <th>200 000 VND </th>
-       
+          <tr v-for="(salary,index) in historySalary" :key="index">
+            <th>{{salary.month}}</th>
+            <th>{{convertTime(salary.start)}}</th>
+            <th>{{salary.salaryaday}}</th>
           </tr>
         </tbody>
       </table>
@@ -58,6 +47,8 @@
   </div>
 </template>
 <script>
+import moment from "moment"
+import { mapActions, mapState } from 'vuex';
 import LineChart from "./Chart";
 
 export default {
@@ -67,9 +58,30 @@ export default {
   },
   data() {
     return {
-        year:'2020'
+        year:'2020',
+        name:this.$route.params.name,
+        id:this.$route.params.id,
+        historySalary:[],
+
+      
     };
   },
+  computed: {
+
+  },
+  methods: {
+    ...mapActions('leader',{
+      getHistorySalary:'getHistorySalary'
+    }),
+    convertTime(time) {
+      return moment(time).format("DD/MM/YYYY");
+    },
+  },
+  async created(){
+    await this.getHistorySalary({id:this.$route.params.id}).then(data=>{
+      this.historySalary=data
+    })
+  }
 };
 </script>
 <style  scoped>

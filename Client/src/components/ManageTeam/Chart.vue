@@ -1,16 +1,24 @@
 <script>
 import Vue from 'vue'
 import VueChartJs from 'vue-chartjs'
+import { mapState } from 'vuex'
 export default Vue.component('lineChart', {
   extends: VueChartJs.Line,
+  props:['data'],
   mounted () {
+    let labels=this.data.map(v=>{
+      return v.month
+    })
+    let salaries=this.data.map(v=>{
+      return v.salaryaday
+    })
     this.renderChart({
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels:labels,
       datasets: [
         {
           label: 'Trợ cấp',
           backgroundColor: '#f87979',
-          data: [2300000, 1000000, 1900000, 2000000, 1600000, 1900000, 2000000]
+          data: salaries
         }
       ]
     }, {responsive: true, maintainAspectRatio: false})

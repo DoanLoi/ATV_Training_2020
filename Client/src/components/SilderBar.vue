@@ -23,17 +23,17 @@
         
           
         </vs-sidebar-item>
-        <vs-sidebar-item id="market">
+        <vs-sidebar-item id="timework"  v-if="user.role ==='Intern'">
           <template #icon>
               <router-link to='/calendar' style="color:white;text-decoration:none">
             <i class='bx bx-grid-alt'></i>
               </router-link>
           </template>
-         <router-link to='/calendar' style="color:white;text-decoration:none">Đăng kí lịch</router-link>
+         <router-link to='/calendar' style="color:white;text-decoration:none" >Đăng kí lịch</router-link>
         </vs-sidebar-item>
 
 
-        <vs-sidebar-item id="Music">
+        <vs-sidebar-item id="ViewCalendar"  v-if="user.role==='Leader'">
           <template #icon>
                <router-link to='/viewcalendar' style="color:white;text-decoration:none">
             <i class='bx bxs-calendar-heart'></i>
@@ -50,15 +50,15 @@
             <router-link to='/listuser' 
             style="color:white;text-decoration:none">Danh sách nhân viên</router-link>
         </vs-sidebar-item>
-              <vs-sidebar-item id="ListUserOfTeam">
+              <vs-sidebar-item id="ListUserOfTeam"  v-if="user.role==='Leader'">
           <template #icon>
                <router-link to='/listuserofteam' style="color:white;text-decoration:none">
             <i class='bx bx-group'></i>
                </router-link>
           </template>
-            <router-link to='/listuserofteam' style="color:white;text-decoration:none">Danh sách nhóm</router-link>
+            <router-link to='/listuserofteam' style="color:white;text-decoration:none">Danh sách intern</router-link>
         </vs-sidebar-item>
-                <vs-sidebar-item id="ManageSalary">
+                <vs-sidebar-item id="ManageSalary" v-if="user.role==='Leader'">
           <template #icon>
                <router-link to='/salary' style="color:white;text-decoration:none">
             <i class='bx bx-dollar-circle'></i>
@@ -66,13 +66,22 @@
           </template>
             <router-link to='/salary' style="color:white;text-decoration:none">Quản lý trợ cấp của nhóm</router-link>
         </vs-sidebar-item>
+          <vs-sidebar-item id="ManageSalaryIntern" v-if="user.role==='Admin'">
+          <template #icon>
+               <router-link to='/listsalary' style="color:white;text-decoration:none">
+            <i class='bx bx-dollar-circle'></i>
+               </router-link>
+          </template>
+            <router-link to='/listsalary' style="color:white;text-decoration:none">Quản lý trợ cấp của intern</router-link>
+        </vs-sidebar-item>
+        
        
-        <vs-sidebar-item id="chat">
+        <!-- <vs-sidebar-item id="chat">
           <template #icon>
             <i class='bx bx-chat' ></i>
           </template>
           Chat
-        </vs-sidebar-item>
+        </vs-sidebar-item> -->
         <!-- <template #footer>
           <vs-row justify="space-between">
             <vs-avatar badge-color="danger" badge-position="top-right">

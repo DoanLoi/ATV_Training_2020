@@ -1,20 +1,21 @@
 <template>
   <div class="calendar">
     <div class="calendar__title">Đăng kí thời gian</div>
-    <button class="submit-button" style="right:320px" @click='onViewTimeDraft()'>Xem nháp</button>
-    <button class="submit-button" style="right:160px" @click='onSaveTimeDraft(user.id,events)'>Lưu nháp</button>
-    <button class="submit-button" style="background:cornflowerblue">Gửi</button>
+    <div>
+      <button class="submit-button" style="right:320px" @click='onViewTimeDraft()'>Xem nháp</button>
+      <button class="submit-button" style="right:160px" @click='onSaveTimeDraft(user.id,events)'>Lưu nháp</button>
+      <button class="submit-button" style="background:cornflowerblue"  @click='onSaveTimeWork(user.id,events)'>Gửi</button>
+    </div>
     <div class="calendar__content">
       <full-calendar
+        v-if="timeWork.length"
         style="padding: 20px"
         :config="config"
         :events="events"
         @day-click="dayClick"
         @event-selected="eventSelected"
       />
-      
     </div>
-    <div>{{events}}</div>
     <vs-dialog overflow-hidden v-model="activeModal">
       <template #header>
         <h4>Chọn thời gian</h4>
@@ -46,10 +47,11 @@ export default {
     return {
       time: "Sáng",
       day: "",
-      events:[],
+      events:this.timeWork,
       activeModal: false,
       config: {
         locale: "vn",
+        allDayDefault: true,
         showNonCurrentDates: false,
         defaultView: 'month',
         header:{
@@ -65,25 +67,27 @@ export default {
   computed: {
     ...mapState({
         user: (state) => state.user.user,
-        timeWork:(state)=> state.user.timeWork
+        timeWork:(state)=> state.user.timeWork,
+        timeDraft:(state)=> state.user.timeDraft
     }),
   },
   methods: {
     ...mapActions('user',{
       saveTimeDraft:'saveTimeDraft',
-      getTimeDraft:'getTimeDraft'
+      getTimeDraft:'getTimeDraft',
+      getTimeWork:'getTimeWork',
+      saveTimeWork:'saveTimeWork'
     }),
     eventSelected(event) {
       const day = event.start._d;
       const events = this.events.filter(
-        (event) => day.getTime() !== moment(event.start).format()
+        (e) => day.getTime() !== moment(e.start).valueOf()
       );
       this.events = events;
     },
     dayClick(day) {
-      console.log(this.timeWork)
       const events = this.events.filter(
-        (event) => day._d.getTime() !== moment(event.start).format()
+        (event) => day._d.getTime() !== moment(event.start).valueOf()
       );
       if (events.length === this.events.length) {
         this.activeModal = true;
@@ -95,8 +99,7 @@ export default {
         this.activeModal = false;
         this.events.push({
           title: this.time,
-          start: this.day,
-          allDay: true,
+          start: this.day
          
         });
         this.time = "Sáng";
@@ -104,7 +107,7 @@ export default {
       }
     },
     onViewTimeDraft(){
-      this.events=this.timeWork
+      this.events=this.timeDraft
     },
     async onSaveTimeDraft(id,timeline){
       if(this.events.length ===0){
@@ -112,10 +115,26 @@ export default {
         return
       }
       await this.saveTimeDraft({id,timeline})
+    },
+    async onSaveTimeWork(id,timeline){
+      const loading=this.$vs.loading({
+        type:'square',
+        text:'Đang xử lý...'
+      })
+      if(this.events.length ===0){
+        toastr.error('ERROR','Hãy chọn ngày nên công ty của bạn')
+        return
+      }
+      this.saveTimeWork({id,timeline}).then(v=>{
+           loading.close()
+      })
     }
-  },
+},
   created(){
     this.getTimeDraft()
+    this.getTimeWork().then(v=>{
+      this.events=this.timeWork
+    })
   }
 };
 </script>

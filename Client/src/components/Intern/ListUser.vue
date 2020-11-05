@@ -40,8 +40,8 @@
       <table style="margin-top: 20px; margin-left: 20px" class="table-calendar">
         <thead>
           <tr>
-            <th style="width: 200px">ID</th>
-            <th style="width: 150px">Họ và tên</th>
+            <th style="width: 100px">ID</th>
+            <th style="width: 250px">Họ và tên</th>
             <th style="width: 300px">Ngày vào công ty</th>
             <th style="width: 300px">Tên tài khoản</th>
             <th style="width: 150px">Type</th>
@@ -52,7 +52,7 @@
         <tbody style="padding-top: 20px">
           <tr v-for="user in filterUser()" :key="user.id">
             <th>{{ user.id }}</th>
-            <th>{{ user.name }}</th>
+            <th><router-link :to='"/viewinfor/"+user.id' style="text-decoration:none">{{ user.name }}</router-link></th>
             <th>{{ convertTime(user.start) }}</th>
             <th>{{ user.username }}</th>
             <th>{{ user.type }}</th>
@@ -280,5 +280,14 @@ export default {
   font-size: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
+}
+a {
+  color: #2c87f0;
+}
+a:visited {
+  color: #2c87f0;
+}
+a:hover, a:active, a:focus {
+  color:#c33;
 }
 </style>
