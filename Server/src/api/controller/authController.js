@@ -6,12 +6,9 @@ let signUp=async(req,res)=>{
     const {email,password}=req.body;
     try {
         let user=await User.findUserByAccount(email);
-        console.log(user);
         if(!user){
             await User.createUser(email,password);
             return res.status(200).send('Success');
-               
-
         }
      
         
@@ -44,7 +41,6 @@ let signIn=async(req,res)=>{
 
 let getUser=async(req,res,next)=>{
     try {
-        throw error;
         return res.status(200).send(req.user);
     } catch (error) {
         next({status:403,message:'Not Found User'});

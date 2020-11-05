@@ -36,20 +36,19 @@ const handleJWT = (req, res, next, roles) => async (err, user, info) => {
   //     return next(apiError);
   // }
     
-  if (roles === "Admin") {
-    if (user.role !== 'Admin') {
+  if (roles.length && roles.indexOf(user.role)==-1) {
+ 
       apiError.status = httpStatus.FORBIDDEN;
       apiError.message = 'Bạn không có quyền';
       return next(apiError);
-    }
   } 
-  if (roles === "Leader") {
-    if (user.role !== 'Leader') {
-      apiError.status = httpStatus.FORBIDDEN;
-      apiError.message = 'Bạn không có quyền';
-      return next(apiError);
-    }
-  } 
+  // if (roles === "Leader") {
+  //   if (user.role !== 'Leader') {
+  //     apiError.status = httpStatus.FORBIDDEN;
+  //     apiError.message = 'Bạn không có quyền';
+  //     return next(apiError);
+  //   }
+  // } 
 //   } else if (!roles.includes(user.role)) {
 //     apiError.status = httpStatus.FORBIDDEN;
 //     apiError.message = 'Forbidden';

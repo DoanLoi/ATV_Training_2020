@@ -1,6 +1,8 @@
 import User from "../service/UserService"
 import bcrypt from "bcrypt"
 import APIError from "../untils/APIError"
+import fs from 'fs'
+
 
 const getUser= async(req,res)=>{
     try {
@@ -17,14 +19,68 @@ const getUser= async(req,res)=>{
 
 
 }
-const updateUser=async(req,res)=>{
+const getIntern= async(req,res)=>{
+    try {
+        let user=await User.findUserById(req.body)
+        let education=await User.findEducationByID(req.body.id);
+        user.education=education
+        return res.status(200).send({user});
+    } catch (error) {
+        
+    }
+
+
+}
+const updateUser=async(req,res,next)=>{
     try {
         let user=await User.updateUser(req.body.newUser);
         return res.status(200).send({
             user:user
         });
     } catch (error) {
-        
+        return next(new APIError({
+            status:500,
+            message:error.message
+        }))
+    }
+}
+//upload CV
+const uploadCV=async(req,res,next)=>{
+    try {
+        const processedFile = req.file
+        let orgName = processedFile.originalname
+        const fullPathInServ = processedFile.path
+        const newFullPath = `${fullPathInServ}-${orgName}`;
+        // console.log(newFullPath)
+        // fs.renameSync(fullPathInServ, newFullPath);
+        let cv=fullPathInServ
+        let {id}=req.user
+        let user=await User.uploadCV(cv,id) 
+        return res.status(200).send({user})
+    } catch (error) {
+        console.log(error)
+        return next(new APIError({
+            status:500,
+            message:error.message
+        }))
+    }
+}
+//Upload Avatar
+const uploadAvatar=async(req,res,next)=>{
+    try {
+        const processedFile = req.file
+        let orgName = processedFile.originalname
+        const fullPathInServ = processedFile.path
+        let avatar=fullPathInServ
+        let {id}=req.user
+        let user=await User.uploadAvatar(avatar,id) 
+        return res.status(200).send({user})
+    } catch (error) {
+        console.log(error)
+        return next(new APIError({
+            status:500,
+            message:error.message
+        }))
     }
 }
 const addEducation=async(req,res)=>{
@@ -34,7 +90,10 @@ const addEducation=async(req,res)=>{
             education:education
         });
     } catch (error) {
-        
+        return next(new APIError({
+            status:500,
+            message:error.message
+        }))
     }
 }
 const delEducation=async(req,res)=>{
@@ -177,8 +236,15 @@ const getSalariesOfTeam=async(req,res,next)=>{
 }
 const searchInternToAddSalary=async(req,res,next)=>{
     try {
-       let {keyword,teamid}=req.body; 
-       let users=await User.searchInternToAddSalary(keyword,teamid);
+       let {keyword,teamid}=req.body
+       let {user}=req
+       let users
+       if(user.Role=='Leader'){
+         users=await User.searchInternToAddSalary(keyword,teamid);
+       }else{
+        users=await User.searchInternToAddSalaryAdmin(keyword);
+       }
+       
        return res.status(200).send(users);
     } catch (error) {
         console.log(error);
@@ -198,6 +264,19 @@ const addSalaryForIntern=async(req,res,next)=>{
         return next(new APIError({
             status:500,
             message:error.message
+        }))
+    }
+}
+//Sửa salary của intern
+const editSalaryOfIntern=async(req,res,next)=>{
+    try {
+        let {id,salary}=req.body;
+        await User.editSalaryOfIntern(id,salary);
+        return res.status(200).send(true);
+    } catch (error) {
+        return next(new APIError({
+            status:500,
+            message:"Tháng này đã review lương"
         }))
     }
 }
@@ -241,8 +320,84 @@ const getTimeDraft=async(req,res,next)=>{
         }))
     }
 }
+//Đăng kí lịch làm việc theo tháng
+const saveTimeWork=async(req,res,next)=>{
+    try {
+        let {id,timeline}=req.body
+        let{name}=req.user
+        let newTimeline=await User.saveTimeWork(id,timeline,name)
+        return res.status(200).send(newTimeline)
+    } catch (error) {  
+        console.log(error)
+        return next(new APIError({
+            status:500,
+            message:"Lỗi Server"
+        }))
+    }
+}
+//Lấy lịch làm việc đã đăng kí của tháng hiện tại
+const getTimeWork=async(req,res,next)=>{
+    try {
+        let {id}=req.user
+        let timeline=await User.getTimeWork(id)
+        return res.status(200).send(timeline)
+    } catch (error) {
+        return next(new APIError({
+            status:500,
+            message:"Lỗi Server"
+        }))
+    }
+}
+//Lấy lịch làm việc của  nhóm trong tháng
+const getTimeWorkOfTeam=async(req,res,next)=>{
+    try {
+        let {id}=req.user
+        let timeline=await User.getTimeWorkOfTeam(id)
+        return res.status(200).send(timeline)
+    } catch (error) {
+        return next(new APIError({
+            status:500,
+            message:"Lỗi Server"
+        }))
+    }
+}
+//Lấy lịch sử trợ cấp
+const getHistorySalary=async(req,res,next)=>{
+    try {
+        let {id}=req.body
+        let historySalary=await User.getHistorySalary(id)
+        return res.status(200).send(historySalary)
+    } catch (error) {
+        return next(new APIError({
+            status:500,
+            message:"Lỗi Server"
+        }))
+    }
+}
+//Lấy danh sách trợ cấp của tất cả Intern
+const getAllSalary=async(req,res,next)=>{
+    try {
+        let allSalary=await User.getAllSalary()
+        return res.status(200).send(allSalary)
+    } catch (error) {
+        return next(new APIError({
+            status:500,
+            message:"Lỗi Server"
+        }))
+    }
+}
+//Lấy lịch để thông báo push lên slack
+const getTimeWorkToSendSlack=async(req,res,next)=>{
+    try {
+        let time=await User.getTimeWorkToSendSlack()
+        return time
+    } catch (error) {
+        
+    }
+}
 export default {
     getUser:getUser,
+    getIntern:getIntern,
     updateUser:updateUser,
     addEducation:addEducation,
     delEducation:delEducation,
@@ -259,6 +414,15 @@ export default {
     addSalaryForIntern:addSalaryForIntern,
     delSalaryOfTeam:delSalaryOfTeam,
     saveTimeDraft:saveTimeDraft,
-    getTimeDraft:getTimeDraft
+    getTimeDraft:getTimeDraft,
+    saveTimeWork:saveTimeWork,
+    getTimeWork:getTimeWork,
+    getTimeWorkOfTeam:getTimeWorkOfTeam,
+    getHistorySalary:getHistorySalary,
+    getAllSalary:getAllSalary,
+    uploadCV: uploadCV,
+    editSalaryOfIntern:editSalaryOfIntern,
+    getTimeWorkToSendSlack:getTimeWorkToSendSlack,
+    uploadAvatar:uploadAvatar
     
 }

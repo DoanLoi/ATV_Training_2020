@@ -8,10 +8,11 @@ import error from '../api/middlewares/error'
 
 
 
+
 let app=express();
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use('/src/public',express.static("./src/public"))
 initRouters(app);
 app.use(passport.initialize());
 // APIError là class có chứa cấu trúc lỗi
@@ -21,6 +22,13 @@ app.use(error.converter);
 app.use(error.notFound);
 
 // error handler, send stacktrace only during development
-app.use(error.handler);
+app.use(error.handler)
+
+
+
 let server= http.createServer(app);
+
+ 
+
+
 export default server;
