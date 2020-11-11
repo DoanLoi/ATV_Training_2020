@@ -25,7 +25,7 @@ let router = expess.Router();
     router.post("/addUser", authorize(["Admin"]), user.addUser);
     router.get("/getListUser", authorize(["Admin"]), user.getListUser);
     router.post("/deleteUser", authorize(["Admin"]), user.deleteUser);
-    router.get("/getListIntern", authorize(["Admin"]), user.getListIntern);
+    router.get("/getListIntern", authorize(["Admin","Leader"]), user.getListIntern);
     router.post("/searchUser", authorize(["Leader"]), user.searchUser);
     router.post("/addInternToTeam", authorize(["Leader"]), user.addInternToTeam);
     router.post("/delInternFromTeam", authorize(["Leader"]), user.delInternFromTeam)

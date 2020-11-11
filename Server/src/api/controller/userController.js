@@ -69,7 +69,6 @@ const uploadCV=async(req,res,next)=>{
 const uploadAvatar=async(req,res,next)=>{
     try {
         const processedFile = req.file
-        let orgName = processedFile.originalname
         const fullPathInServ = processedFile.path
         let avatar=fullPathInServ
         let {id}=req.user
@@ -239,8 +238,10 @@ const searchInternToAddSalary=async(req,res,next)=>{
        let {keyword,teamid}=req.body
        let {user}=req
        let users
-       if(user.Role=='Leader'){
+       if(user.role=='Leader'){
+       
          users=await User.searchInternToAddSalary(keyword,teamid);
+         
        }else{
         users=await User.searchInternToAddSalaryAdmin(keyword);
        }

@@ -7,6 +7,7 @@ import {transMail} from "../untils/templateMailer"
 import sendMail from "./emails/emailProvider"
 import fsExtra from  "fs-extra"
 import fs from 'fs'
+import { use } from "passport"
 
 const saltRounds=8;
 let findUserById=(payload)=>{
@@ -146,7 +147,7 @@ let getListIntern=(id)=>{
     return new Promise(async(resolve,reject)=>{
       let idTeam=await db.any('SELECT id from teams where leaderid=$1',[id]);
       if(idTeam.length>0){
-        let listIntern=await db.any('SELECT * from userofteam where teamid=$1',[idTeam[0].id]);
+        let listIntern=await db.any('SELECT userofteam.*,users.name, users.username,users.type from userofteam, users where userofteam.teamid=$1 AND userofteam.internid=users.id',[idTeam[0].id]);
         resolve({
             interns:listIntern,
             teamID:idTeam[0].id
@@ -172,7 +173,13 @@ let searchUser=(keyword)=>{
             let idInternHaveTeam=internHaveTeam.map(intern=>{
               return intern.internid
             })
-            let users=await db.any('SELECT name,id,start,username,type,role from users where name LIKE $1 AND role=$2 AND id NOT IN  ($3:csv)',[keyword,role,idInternHaveTeam]);
+            let users=await db.any('SELECT name,id,start,username,type,role,avatar from users where name LIKE $1 AND role=$2 AND id NOT IN  ($3:csv)',[keyword,role,idInternHaveTeam]);
+            let usersPromise=users.map(async(user)=>{
+                let avatar=await fsExtra.readFile(`${user.avatar}`)
+                user.avatar=avatar
+                return user
+            })
+            users=await Promise.all(usersPromise)
             resolve(users)
         } catch (error) {
             reject(error)
@@ -184,8 +191,8 @@ let addInternToTeam=(newIntern,teamid)=>{
     return new Promise(async(resolve,reject)=>{
         try {
             let today=moment();
-            let intern=await db.any('INSERT INTO userofteam values ($1,$2,$3,$4,$5,$6) RETURNING *',[
-                newIntern.id,teamid,today,newIntern.username,newIntern.type,newIntern.name
+            let intern=await db.any('INSERT INTO userofteam values ($1,$2,$3) RETURNING *',[
+                newIntern,teamid,today
             ])
             resolve(intern[0])
         } catch (error) { 
@@ -201,11 +208,12 @@ let delInternFromTeam=(id)=>{
         reject(err);
     })
 }
+// Lấy trợ cấp cho intern trong nhóm quyền Leader
 let getSalariesOfTeam=(id)=>{
     return new Promise(async(resolve,reject)=>{
       let idTeam=await db.any('SELECT id from teams where leaderid=$1',[id]);
       if(idTeam.length>0){
-        let listSalary=await db.any('SELECT name,S.* from salary S,users where users.id=S.internid and S.teamid=$1',[idTeam[0].id]);
+        let listSalary=await db.any('SELECT name,salary.* from salary,userofteam UOT,users where UOT.teamid=$1 and UOT.internid=salary.internid and users.id=salary.internid',[idTeam[0].id]);
         resolve({
             salaries:listSalary,
             teamID:idTeam[0].id
@@ -222,10 +230,10 @@ let getSalariesOfTeam=(id)=>{
         reject(err);
     })
 }
-//Lấy tất cả các trợ cấp cho Intern 
+//Lấy tất cả các trợ cấp cho Intern trong  quyền Admin
 let getAllSalary=()=>{
     return new Promise(async(resolve,reject)=>{
-        let listSalary=await db.any('Select T.*,users.name as leader from users,teams,(SELECT name,S.* from salary S,users where users.id=S.internid) as T where T.teamid=teams.id and leaderid=users.id')
+        let listSalary=await db.any('Select T.*,users.name as leader from (SELECT name,id,S.* from salary S,users where users.id=S.internid) T left join userofteam UOT on t.id=UOT.internid left join teams on UOT.teamid=teams.id left join users on users.id=teams.leaderid')
         resolve(listSalary)
     })
 }
@@ -234,7 +242,13 @@ let searchInternToAddSalary=(keyword,teamid)=>{
     return new Promise(async(resolve,reject)=>{
         try {
             keyword=keyword+"%";
-            let users=await db.any('SELECT userofteam.teamid,userofteam.internid,userofteam.name,salary.salaryaday FROM userofteam LEFT JOIN salary ON userofteam.internid=salary.internid where userofteam.name LIKE $1 AND userofteam.teamid=$2 AND salary.start IS NULL',[keyword,teamid]);
+            let users=await db.any('SELECT S.*,users.avatar,users.name from users,(SELECT userofteam.teamid,userofteam.internid FROM userofteam LEFT JOIN salary ON userofteam.internid=salary.internid where userofteam.teamid=$2 AND salary.start IS NULL) as S WHERE S.internid=users.id and  users.name LIKE $1',[keyword,teamid]);
+            let usersPromise=users.map(async(user)=>{
+                let avatar=await fsExtra.readFile(`${user.avatar}`)
+                user.avatar=avatar
+                return user
+            })
+            users=await Promise.all(usersPromise)
             resolve(users);
         } catch (error) {
             reject(error);
@@ -243,12 +257,19 @@ let searchInternToAddSalary=(keyword,teamid)=>{
     })
 }
 //Tìm kiếm trong danh sách các Intern để add salary quyền admin
-let searchInternToAddSalaryAdmin=(keyword,teamid)=>{
+let searchInternToAddSalaryAdmin=(keyword)=>{
     return new Promise(async(resolve,reject)=>{
         try {
-            keyword=keyword+"%";
-            let users=await db.any('SELECT userofteam.teamid,userofteam.internid,userofteam.name,salary.salaryaday FROM userofteam LEFT JOIN salary ON userofteam.internid=salary.internid where userofteam.name LIKE $1 AND salary.start IS NULL',[keyword]);
-            resolve(users);
+            keyword='%'+keyword+"%";
+            let users=await db.any("SELECT users.avatar,users.name,users.id from users LEFT JOIN salary on users.id=salary.internid where users.name LIKE $1 and users.role='Intern'",[keyword]);
+            let usersPromise=users.map(async(user)=>{
+                let avatar=await fsExtra.readFile(`${user.avatar}`)
+                user.avatar=avatar
+                return user
+            })
+            users=await Promise.all(usersPromise)
+            console.log(users)
+            resolve(users)
         } catch (error) {
             reject(error);
         }
@@ -256,17 +277,18 @@ let searchInternToAddSalaryAdmin=(keyword,teamid)=>{
     })
 }
 //Thêm salary cho intern
-const addSalaryForIntern=(internid,salary,teamid)=>{
+const addSalaryForIntern=(internid,salary)=>{
+    console.log(internid)
     return new Promise(async(resolve,reject)=>{
             let today=moment()
             let month=moment().format('MM-YYYY')
-            db.any('INSERT INTO salary values ($1,$2,$3,$4) ',[internid,today,salary,teamid]).then( async (v)=>{
+            db.any('INSERT INTO salary values ($1,$2,$3) ',[internid,today,salary]).then( async (v)=>{
                 let intern= await db.any('SELECT name,S.* from salary S,users where users.id=S.internid and S.internid=$1',[internid])
                 resolve(intern[0]) 
             }).catch(error=>{
                 reject(error)
             })
-            db.any('INSERT INTO historysalary values ($1,$2,$3,$4,$5) ',[internid,today,salary,teamid,month])
+            db.any('INSERT INTO historysalary values ($1,$2,$3,$4) ',[internid,today,salary,month])
            
        
     })
@@ -332,6 +354,7 @@ let saveTimeWork=(id,timeline,name)=>{
                     return eventDay[0]
                 })
                 let newTimeline=await Promise.all(newTimelinePromise)
+                resolve(newTimeline)
                 let content;
                 if(timeDelete.length){
                     content='đã sửa'
@@ -339,8 +362,8 @@ let saveTimeWork=(id,timeline,name)=>{
                     content='đã đăng kí'
                 }
                 let leader=await db.any('SELECT users.email,users.name from users,userofteam UT,teams Where  UT.internid=$1 AND teams.id=UT.teamid AND teams.leaderid=users.id',[id])
-                sendMail(leader[0].email,transMail.subject,transMail.template(name,content,leader[0].name,month,'http://aloaloaloalo')).then(success=>{
-                    resolve(newTimeline)
+                let link='http://localhost:8000/#/viewcalendar'
+                sendMail(leader[0].email,transMail.subject,transMail.template(name,content,leader[0].name,month,link)).then(success=>{
                 }).catch(err=>{
                     reject(err)
                 })
