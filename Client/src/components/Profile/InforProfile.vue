@@ -251,6 +251,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import toastr from 'toastr'
+import mixin from "../../mixin"
 export default {
   name: "infor-profile",
   data() {
@@ -321,10 +322,7 @@ export default {
             this.confirmPassword='';
         }
       }
-    },
-    bufferToBase64(cv){
-      return  'data:application/pdf;base64,'+Buffer.from(cv).toString("base64");
-}
+    }
   },
   computed: {
     ...mapState({

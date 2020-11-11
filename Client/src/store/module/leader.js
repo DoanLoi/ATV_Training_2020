@@ -88,12 +88,10 @@ export const leader={
             }
         },
         //Thêm intern vào nhóm
-        async addInternToTeam({commit},{newIntern,teamid}){
+        async addInternToTeam({dispatch,commit},{newIntern,teamid}){
             try {
-                console.log(teamid);
                 let result=await api.post('/addInternToTeam',{newIntern,teamid});
-                let intern=result.data;
-                commit('setListInternWhenAdd',intern);
+                dispatch('getInternsOfTeam')
                 return true;
             } catch (error) {
                 console.log(error.response.data.message);
@@ -123,11 +121,10 @@ export const leader={
             }
         },
         //Thêm trợ cấp cho intern
-        async addSalaryForIntern({commit},{internid,salary,teamid}){
+        async addSalaryForIntern({dispatch,commit},{internid,salary,teamid}){
             try {
                 let result=await api.post('/addSalaryForIntern',{internid,salary,teamid});
-                let intern=result.data;
-                commit('setListSalarynWhenAdd',intern);
+                dispatch('getSalariesOfTeam')
                 return true;
             } catch (error) {
                 console.log(error.response.data.message);

@@ -40,27 +40,27 @@
       <table style="margin-top: 20px; margin-left: 20px" class="table-calendar">
         <thead>
           <tr>
-            <th style="width: 100px">ID</th>
+            <!-- <th style="width: 100px">ID</th> -->
             <th style="width: 250px">Họ và tên</th>
             <th style="width: 300px">Ngày vào công ty</th>
             <th style="width: 300px">Tên tài khoản</th>
             <th style="width: 150px">Type</th>
             <th style="width: 150px">Role</th>
-            <!-- <th style="width: 150px">Actions</th> -->
+            <th style="width: 150px">Actions</th>
           </tr>
         </thead>
         <tbody style="padding-top: 20px">
           <tr v-for="user in filterUser()" :key="user.id">
-            <th>{{ user.id }}</th>
+            <!-- <th>{{ user.id }}</th> -->
             <th><router-link :to='"/viewinfor/"+user.id' style="text-decoration:none">{{ user.name }}</router-link></th>
             <th>{{ convertTime(user.start) }}</th>
             <th>{{ user.username }}</th>
             <th>{{ user.type }}</th>
             <th>{{ user.role }}</th>
-            <!-- <th>
+            <th>
              
               <i @click='deleteUser(user.id)' style="font-size: 25px; color: red" class="bx bx-x-circle"></i>
-            </th> -->
+            </th>
           </tr>
         </tbody>
       </table>
@@ -118,6 +118,7 @@
 import moment from "moment";
 import toastr from "toastr";
 import { mapActions, mapState } from "vuex";
+import mixin from "../../mixin"
 export default {
   name: "view-calendar",
   data() {
@@ -165,9 +166,6 @@ export default {
           this.activeModal = false;
         }
       }
-    },
-    convertTime(time) {
-      return moment(time).format("DD/MM/YYYY");
     },
     filterUser(){
       if(this.filterName=='' && this.filterRole=='') return this.listUser

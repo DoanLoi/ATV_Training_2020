@@ -27,7 +27,7 @@ const router= new Router({
         {path:'/viewcalendar',name:'ViewCalendar',component:ViewCalendar},
         {path:'/listuser',name:'ListUser',component:ListUser},
         {path:'/listuserofteam',name:'ListUserOfTeam',component:ListUserOfTeam},
-        {path:'/salary',name:'ManageSalary',component:ManageSalaryOfTeam},
+        {path:'/salary',name:'ManageSalaryOfTeam',component:ManageSalaryOfTeam},
         {path:'/listsalary',name:'ManageSalary',component:ManageSalary},
         {path:'/historysalary/:id/:name',name:'HistorySalary',component:HistorySalary},
         {path:'/viewinfor/:id',name:'ViewInfor',component:ViewInfor}

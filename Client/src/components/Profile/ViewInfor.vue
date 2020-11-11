@@ -134,7 +134,8 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
-import toastr from "toastr";
+import toastr from "toastr"
+import mixin from "../../mixin"
 export default {
   name: "infor-profile",
   data() {
@@ -144,10 +145,7 @@ export default {
   methods: {
     ...mapActions("leader", {
      getInternByID:'getInternByID'
-    }),
-    bufferToBase64(cv){
-      return  'data:application/pdf;base64,'+Buffer.from(cv).toString("base64");
-    }
+    })
     
   },
   computed: {

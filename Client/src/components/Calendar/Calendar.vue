@@ -8,7 +8,6 @@
     </div>
     <div class="calendar__content">
       <full-calendar
-        v-if="timeWork.length"
         style="padding: 20px"
         :config="config"
         :events="events"

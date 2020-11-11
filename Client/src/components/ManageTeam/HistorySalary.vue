@@ -38,7 +38,7 @@
         <tbody style="padding-top: 20px">
           <tr v-for="(salary,index) in historySalary" :key="index">
             <th>{{salary.month}}</th>
-            <th>{{convertTime(salary.start)}}</th>
+            <th>{{convertTime(salary.updatedat)}}</th>
             <th>{{salary.salaryaday}}</th>
           </tr>
         </tbody>
@@ -50,6 +50,7 @@
 import moment from "moment"
 import { mapActions, mapState } from 'vuex';
 import LineChart from "./Chart";
+import mixin from '../../mixin'
 
 export default {
   name: "History-Salary",
@@ -72,10 +73,7 @@ export default {
   methods: {
     ...mapActions('leader',{
       getHistorySalary:'getHistorySalary'
-    }),
-    convertTime(time) {
-      return moment(time).format("DD/MM/YYYY");
-    },
+    })
   },
   async created(){
     await this.getHistorySalary({id:this.$route.params.id}).then(data=>{

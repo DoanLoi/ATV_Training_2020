@@ -5,50 +5,52 @@
     <div class="calendar__content">
       <vs-row>
         <vs-col lg='3' sm='6' xs='12'>
-            <input class="edit-input" placeholder="Họ tên">
+            <input class="edit-input" :value='"Tháng "+monthCurrent' disabled >
         </vs-col>
            <vs-col lg='3' sm='6' xs='12'>
-            <select class="edit-input" placeholder="Tháng" style="height:47px">
-              <option value="1">Tháng Một</option>
+            <select class="edit-input" style="height:47px" v-model="start">
+               <option value="" selected>Từ ngày</option>
+              <option v-for="index in dayOfMonth" :key="index"  :value="index">{{index}}</option>
             </select>
         </vs-col>
                <vs-col lg='3' sm='6' xs='12'>
-             <select class="edit-input" placeholder="Năm" style="height:47px">
-              <option value="1">2020</option>
-            </select>
+             <select class="edit-input"  style="height:47px" v-model="end">
+               <option value="" selected>Đến ngày</option>
+                <option v-for="index in dayOfMonth" :key="index"  :value="index">{{index}}</option>
+            </select> 
         </vs-col>
                   <vs-col lg='3' sm='6' xs='12'>
            <button  class="search-button">Tìm kiếm</button>
         </vs-col>
         
       </vs-row>
-      <table style="margin-top:20px;margin-left:20px;" class='table-calendar'>
+      <table style="margin-top:20px;margin-left:20px;margin-right:20px;width: calc(100% - 40px);" class='table-calendar'>
         <thead>
           <tr>
             <th style="width:150px">Intern</th>
-            <th style="width:32px" v-for="index in (6,dayOfMonth)" :key="index" >{{index}}</th>
+            <th style="width:32px" v-for="index in (end-start+1>0?end-start+1:0)" :key="index" >{{index+(+start-1)}}</th>
           </tr>
         </thead>
         <tbody style="padding-top:20px">
           <tr v-for="(timeOfIntern,index) in timeWorks" :key="timeOfIntern">
             <th  style="width:150px">{{index}}</th>
-             <th style="width:32px" v-for="index in dayOfMonth" :key="index" >
-               <div v-if="timeOfIntern[index]=='Sáng'">
+             <th style="width:32px" v-for="index in (end-start+1>0?end-start+1:0)" :key="index" >
+               <div v-if="timeOfIntern[index+(+start-1)]=='Sáng'">
                   <i
                     style="font-size: 25px;color:#28fa40"
                     class="bx bx-check"></i>
                     <i style="font-size: 25px;color:red" class="bx bx-x"></i>
                </div>
-                 <div v-else-if="timeOfIntern[index]=='Chiều'">
+                 <div v-else-if="timeOfIntern[index+(+start-1)]=='Chiều'">
                   <i style="font-size: 25px;color:red" class="bx bx-x"></i>
                   <i
                     style="font-size: 25px;color:#28fa40"
                     class="bx bx-check"></i>
                </div>
-                 <div v-else-if="timeOfIntern[index]=='Cả ngày'">
+                 <div v-else-if="timeOfIntern[index+(+start-1)]=='Cả ngày'">
                   <i style="font-size: 25px;color:#28fa40" class="bx bx-check"></i>
                </div>
-                 <div v-else-if="timeOfIntern[index]==null">
+                 <div v-else-if="timeOfIntern[index+(+start-1)]==null">
                   <i style="font-size: 25px;color:red" class="bx bx-x"></i>
                   
                </div>
@@ -56,38 +58,6 @@
             </th>
 
            </tr>
-             <!--    <tr>
-            <th  style="width:150px" v-if="user.role =='Admin'">Nguyễn Văn Toàn</th>
-             <th style="width:30px" v-for="index in 30" :key="index" >
-                  <i
-                    style="font-size: 25px;color:#28fa40"
-                    class="bx bx-check"
-                  ></i>
-                   <i v-if="!(index % 7)"
-                    style="font-size: 25px;color:red"
-                    class="bx bx-x"
-                  ></i>
-                  
-                  
-             </th>
-
-          </tr>
-                 <tr>
-            <th  style="width:150px">Phạm Thế Tài</th>
-             <th style="width:30px" v-for="index in 30" :key="index" >
-                  <i 
-                    style=" font-size: 25px;color:#28fa40"
-                    class="bx bx-check"
-                  ></i>
-                     <i v-if="!(index % 5)"
-                    style="font-size: 25px;color:red"
-                    class="bx bx-x"
-                  ></i>
-                  
-             </th>
-
-          </tr> -->
-          
         </tbody>
       </table>
     </div>
@@ -102,14 +72,22 @@ export default {
   name: "view-calendar",
   data() {
     return {
-      dayOfMonth: moment(). daysInMonth()
+      dayOfMonth: moment().daysInMonth(),
+      start:"1",
+      end:moment().daysInMonth()
     };
   },
   computed: {
     ...mapState({
        user:state=>state.user.user,
        timeWorks:state=>state.leader.timeWorks
-    })
+    }),
+    monthCurrent:()=>{
+      return moment().format('M-Y')
+    },
+    dayToView:()=>{
+      return +this.end-this.start+1
+    }
   },
   methods: {
     ...mapActions('leader',{

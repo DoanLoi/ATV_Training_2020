@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%" >
+  <div style="width: 100%">
     <nav-bar />
 
     <div class="sliderbar">
@@ -13,7 +13,7 @@
 <script>
 import SliderBar from "./SilderBar";
 import NavBar from "./NavBar";
-import {mapActions, mapState} from "vuex"
+import { mapActions, mapState } from "vuex";
 export default {
   name: "home",
   data() {
@@ -24,18 +24,18 @@ export default {
     NavBar,
   },
   methods: {
-    ...mapActions('user',{
-        getUser:'getUser'
-    })
+    ...mapActions("user", {
+      getUser: "getUser",
+    }),
   },
   computed: {
-     ...mapState({
-      activeSlider:state=>state.slider.activeSlider,
-      marginLeft:state=>state.slider.marginLeft,
-      token:state=>state.auth.token,
-    })
+    ...mapState({
+      activeSlider: (state) => state.slider.activeSlider,
+      marginLeft: (state) => state.slider.marginLeft,
+      token: (state) => state.auth.token,
+    }),
   },
-  created(){
+  created() {
     this.getUser();
   }
 };
@@ -50,7 +50,7 @@ export default {
   transition: all 0.2s ease-in-out 0s;
   width: 350px;
   z-index: 1001;
-  height:111%;
+  height: 111%;
 }
 .content {
   padding: 25px;
